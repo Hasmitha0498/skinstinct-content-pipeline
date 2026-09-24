@@ -20,7 +20,7 @@ const STEPS: Step[] = [
     who: 'Meera',
     icon: MessageIcon,
     detail: 'Meera keeps her existing habit: she drops a note into her Telegram channel, typed or spoken. Nothing new to learn.',
-    safeguard: 'Only her channel is accepted; each Telegram update is processed exactly once, even if Telegram re-sends it.',
+    safeguard: 'Each Telegram update is processed exactly once, even if Telegram re-sends it. Every chat’s drafts are kept separate.',
   },
   {
     title: 'Transcribe',

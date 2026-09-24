@@ -278,7 +278,8 @@ cp .env.example .env.local
 | `GEMINI_API_KEY` | yes | From Google AI Studio |
 | `SUPABASE_URL` | yes | `https://<project>.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-only key |
-| `TELEGRAM_ALLOWED_CHAT_IDS` | recommended | Comma-separated chat IDs allowed to use the bot. Empty = anyone who finds the bot (fine while setting up). |
+| `TELEGRAM_ALLOWED_CHAT_IDS` | no | Comma-separated chat IDs allowed to use the bot. Empty = anyone who finds the bot. **The submitted demo is deliberately open** so reviewers can try it; each chat only ever sees and reviews its own drafts. Set it to Meera's channel ID for real use. |
+| `TELEGRAM_BOT_USERNAME` | no | Bot username (without @), not secret. Shows the "Open Telegram Bot" buttons on the website; empty hides them. |
 | `GEMINI_MODEL_SCORING` / `_TRANSCRIPTION` / `_DRAFTING` | no | Override default models (section 8) |
 | `GEMINI_DRAFTING_FALLBACK_MODELS` | no | Comma-separated drafting fallbacks (default `gemini-3.8-flash,gemini-3.1-flash-lite`) |
 | `GEMINI_FALLBACK_MODEL` | no | Model tried when the main one is overloaded (classification roles; also last in the drafting chain) |
