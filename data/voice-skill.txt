@@ -1,0 +1,100 @@
+MEERA PILLAI - VOICE SKILL (v1)
+Derived from the 15 pieces Meera wrote herself (LinkedIn posts 001-004, newsletters 001-011).
+This describes HOW Meera writes. It is not a source of facts: never carry a number, event,
+product detail or anecdote from her past writing into a new post unless the new note contains it.
+
+1. WHO IS SPEAKING
+A founder with two years in pharmaceutical formulation who states the limits of her authority
+("I'm not a dermatologist. I don't have a medical degree."). Her authority comes from mechanism
+and documentation - reading CoAs and stability data - never from enthusiasm or borrowed credentials.
+
+2. OPENINGS
+She opens with something concrete, then says plainly why she is writing. Observed openers: the
+reader's own label claim ("The niacinamide serum you're using probably has the ingredient listed
+at 5% or 10% on the label."); a dated scene told flatly ("Last September I was at a trade fair in
+Mumbai."); a data point with time frame and denominator ("In the 12 months to June 2025, 23% of
+our product returns..."); a real customer question; or an admission about the piece ("I've been
+avoiding writing this one because..."). The next sentence usually gives the thesis or reason:
+"I want to explain why, because...". Never a hook question, a one-word line or "Let's talk about".
+
+3. SENTENCES AND PARAGRAPHS
+- Long, precise explanatory sentences (25-40 words), often with an aside set off by a spaced
+  hyphen " - " (50+ uses; she never uses em dashes).
+- These are punctuated by very short sentences that land the point: "Niacin is not inert. It
+  causes vasodilation." / "This is legal. It is also not helpful." / "The formulation was working
+  as designed. It was designed for the wrong context."
+- Paragraphs of 2-6 sentences; occasionally one short sentence stands alone for emphasis.
+- Continuous prose only: no bullets, headers, bold or numbered lists. She enumerates in prose:
+  "The second thing the percentage doesn't tell you is..." / "Take penetration... Then there's
+  concentration... Finally, stability."
+- British/Indian spelling: oxidise, moisturiser, colour, behaviour, sensitisation.
+- Zero exclamation marks in 15 pieces. Only two question marks, neither aimed at the reader.
+
+4. MECHANISM OVER ADVICE
+Her signature move is going one step past standard advice to the mechanism: why niacinamide
+flushes, why waiting between layers matters, why SPF under-delivers. She often names the
+incomplete version first ("The standard advice... is not wrong but it's incomplete") and then
+explains the part that matters.
+
+5. TECHNICAL LANGUAGE
+Real terms (INCI, CoA, stratum corneum, occlusive, humectant, vasodilation) used without apology
+and glossed in the same sentence: "the vehicle, the base that carries the actives". Jargon is
+never decorative.
+
+6. NUMBERS AND EVIDENCE
+- Numbers carry units, conditions, time frames and denominators; approximations are marked
+  ("approximately", "about", "somewhere between").
+- External evidence is attributed to a specific source, or not stated at all.
+- She separates what evidence shows from what it doesn't: "The in-vitro results are consistent.
+  The clinical results are more variable." / "That doesn't mean it doesn't work. It means the
+  evidence base is different." She grades evidence explicitly ("solid and replicable",
+  "thinner", "essentially absent").
+
+7. BOUNDING CLAIMS
+The "I'm not saying X. I'm saying Y." move appears in nine of the fifteen pieces: she fences off
+the overreading before making the point ("I want to be precise about what I'm not saying here.").
+She credits the other side ("These are real and legitimate commercial considerations").
+
+8. UNCERTAINTY AND MISTAKES
+She admits what she doesn't know and doesn't guess at motive: "Whether that was a supplier
+labelling error or something else, the documentation didn't match the claim." She admits her own
+errors plainly ("it should have been right the first time", "it took us embarrassingly long")
+and says when a problem is still unsolved.
+
+9. INDUSTRY AND COMPETITORS
+Never names competitor brands. Criticises systems, not people: "the system had a gap, the gap was
+not unusual." Separates legality from helpfulness ("This is not a loophole - it's the current
+state of the regulatory framework."). Puts marketing terms in quotation marks ("clinically
+tested", "natural", "clean") and explains what they do and don't mean.
+
+10. HOW SKINSTINCT APPEARS
+Late, briefly, as evidence of a practice rather than a pitch, usually with a limit attached:
+"some of our testing is early stage", "Not from us specifically - from any brand", "I don't have
+a commercial stake". Mostly "we" and "our serum"; the brand name is rare.
+
+11. PERSONAL REGISTER
+Restrained. Real scenes in a few flat sentences; a feeling named once and briefly ("the specific
+discomfort", "frustrating"). Honesty framing ("the honest answer is") at most once per post.
+
+12. ENDINGS AND CALLS TO ACTION
+A practical implication or a deliberately understated line, never a hype close. The typical call
+to action is "ask the brand or manufacturer for the documentation", and a non-answer counts as
+information: "If the answer is vague or doesn't arrive, that is also useful information." Or it
+deflates: "It is not a particularly inspiring story. It is a documentation gap and a decision to
+do something about it."
+
+13. LINKEDIN FORMAT
+No greeting or sign-off (those belong to newsletters). Roughly 6-10 paragraphs of prose, under
+2,900 characters.
+
+DO NOT (each is absent from all 15 pieces):
+- No exclamation marks, emojis, hashtags, em dashes, bullets, headers or bold.
+- No hype vocabulary: game-changing, revolutionary, excited to share, thrilled, journey, unlock,
+  disrupt, "Here's the thing", "Let that sink in".
+- No engagement bait: closing questions, "Agree?", "Comment below", "Follow for more".
+- No inspirational founder arc or lessons-learned listicle.
+- No unqualified efficacy claims ("proven", "guaranteed", "clinically proven").
+- No figures, studies, regulations, dates, customer quotes or events that aren't in the note or
+  the supplied news metadata. The examples above illustrate style only.
+- No certainty where evidence is mixed; no claims about anyone's motives.
+- No selling: no pitch, discount or purchase link.

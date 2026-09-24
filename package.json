@@ -1,0 +1,44 @@
+{
+  "name": "skinstinct-content-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram notes -> Gemini triage + drafting -> human review. Never publishes to LinkedIn.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "poll": "tsx --env-file=.env.local scripts/poll.ts",
+    "telegram:set-webhook": "tsx --env-file=.env.local scripts/set-telegram-webhook.ts",
+    "telegram:webhook-info": "tsx --env-file=.env.local scripts/telegram-webhook-info.ts",
+    "voice-skill:seed": "tsx --env-file=.env.local scripts/seed-voice-skill.ts",
+    "gemini:models": "tsx --env-file=.env.local scripts/list-gemini-models.ts",
+    "eval:seed-notes": "tsx --env-file=.env.local scripts/evaluate-seed-notes.ts",
+    "eval:voice": "tsx --env-file=.env.local scripts/validate-voice.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^2.24.0",
+    "@supabase/supabase-js": "^2.117.1",
+    "fast-xml-parser": "^5.11.1",
+    "next": "^16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "eslint": "^10.11.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  }
+}

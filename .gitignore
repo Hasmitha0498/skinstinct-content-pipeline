@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# Next.js / Vercel build output
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets - never commit these
+.env
+.env.*
+!.env.example
+
+# local artefacts
+coverage/
+tmp/
+*.log
+.DS_Store
