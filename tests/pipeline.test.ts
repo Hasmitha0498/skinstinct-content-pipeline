@@ -34,7 +34,7 @@ describe('note pipeline', () => {
 
     expect(repo.drafts).toHaveLength(1);
     const draft = repo.drafts[0]!;
-    expect(draft).toMatchObject({ status: 'pending', note_id: note.id, draft_text: SAMPLE_POST, news_used: false });
+    expect(draft).toMatchObject({ status: 'pending', note_id: note.id, draft_text: SAMPLE_POST, news_used: false, drafting_model: 'test-flash' });
 
     const message = telegram.sent.at(-1)!;
     expect(message.text).toMatch(/^Draft ready — score 9\/10/);
@@ -144,7 +144,7 @@ describe('note pipeline', () => {
     const decision = { item, confidence: 0.86, reason: 'Same topic: batch testing.', usable_connection: 'Stricter batch testing makes the CoA baseline point timely.' };
     const ai = fakeAi({
       evaluateNews: vi.fn(async () => ({ decision, rejectedBecause: null })),
-      draft: vi.fn(async () => ({ post: `${SAMPLE_POST}\n\nThe Economic Times reports a regulator is tightening batch testing rules.`, newsUsed: true, unsupportedFigures: [] })),
+      draft: vi.fn(async () => ({ post: `${SAMPLE_POST}\n\nThe Economic Times reports a regulator is tightening batch testing rules.`, newsUsed: true, unsupportedFigures: [], model: 'test-flash', warnings: [] })),
     });
     const { deps, repo, telegram } = buildDeps({ ai });
     await send(deps, textUpdate(STRONG_NOTE));
@@ -177,11 +177,13 @@ describe('note pipeline', () => {
   });
 
   it('shows figures the fact check could not trace to the note', async () => {
-    const ai = fakeAi({ draft: vi.fn(async () => ({ post: SAMPLE_POST, newsUsed: false, unsupportedFigures: ['38%'] })) });
+    const ai = fakeAi({ draft: vi.fn(async () => ({ post: SAMPLE_POST, newsUsed: false, unsupportedFigures: ['38%'], model: 'test-flash', warnings: ['One long paragraph: needs breaking up'] })) });
     const { deps, repo, telegram } = buildDeps({ ai });
     await send(deps, textUpdate(STRONG_NOTE));
     expect(telegram.sent.at(-1)!.text).toContain("⚠ These figures aren't in your note or the news metadata. Check or remove them: 38%");
     expect(repo.drafts[0]!.unsupported_figures).toEqual(['38%']);
+    expect(telegram.sent.at(-1)!.text).toContain('⚠ One long paragraph: needs breaking up');
+    expect(repo.drafts[0]!.review_warnings).toEqual(['One long paragraph: needs breaking up']);
   });
 
   it('refuses to draft in a generic voice when no Voice Skill can be loaded', async () => {

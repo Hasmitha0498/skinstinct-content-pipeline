@@ -125,6 +125,8 @@ export async function processNote(deps: PipelineDeps, input: IncomingNote): Prom
       news_relevance_reason: usedNews?.reason ?? null,
       unsupported_figures: draft.unsupportedFigures,
       voice_skill_id: voice.id,
+      drafting_model: draft.model,
+      review_warnings: draft.warnings,
     });
   } catch (error) {
     return fail('drafting', error, MSG.storageFailed);
@@ -133,7 +135,7 @@ export async function processNote(deps: PipelineDeps, input: IncomingNote): Prom
   log.info('draft.created', { ...draftFields, newsUsed: usedNews !== null, voiceSource: voice.source, unsupportedFigures: draft.unsupportedFigures.length });
 
   // 7. Send for review. The draft replies to the original note so it's clear which thought it came from.
-  const text = draftMessage({ score: score.total_score, post: draft.post, news: usedNews?.item ?? null, unsupportedFigures: draft.unsupportedFigures });
+  const text = draftMessage({ score: score.total_score, post: draft.post, news: usedNews?.item ?? null, unsupportedFigures: draft.unsupportedFigures, warnings: draft.warnings });
   try {
     const messageId = await deps.telegram.sendMessage(input.chatId, text, { replyToMessageId: input.messageId });
     await deps.repo.setDraftMessageId(stored.id, messageId);

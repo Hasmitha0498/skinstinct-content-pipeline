@@ -55,7 +55,7 @@ For every message Meera sends the bot:
 | Score | Gemini scores the note 0-2 on five things (insight, specificity, relevance, evidence, completeness). The app adds the scores up itself: it never trusts Gemini's arithmetic. |
 | Reject weak notes | Below 6/10: Meera gets a short, specific explanation and processing stops. No news search, no draft. |
 | Research | 6/10 or more: Gemini turns the note into a short search, the app queries Google News RSS (India edition), and Gemini checks whether any recent headline *genuinely* fits. Usually none does, and that's fine. |
-| Draft | Gemini writes a LinkedIn draft from the note, following Meera's **Voice Skill** (`data/voice-skill.txt`) and strict no-invention rules. Figures that don't appear in the note are flagged. |
+| Draft | Gemini writes a LinkedIn draft from the note, following Meera's **Voice Skill** (`data/voice-skill.txt`) and strict no-invention rules. Mechanical checks flag figures that aren't in the note, wording copied from her past posts, and walls of text. One redraft is attempted, and anything left unresolved is shown to Meera as a ⚠ note under the draft. |
 | Review | The draft is stored as **pending** and sent to Meera. If news was used, a mandatory source block is attached. |
 | Decide | Meera replies **APPROVE** or **REJECT**. The status is updated, confirmed, and the flow stops. |
 
@@ -196,16 +196,17 @@ A direct chat with the bot is the simplest option.
    The output ends with a "Configured:" list marking each configured model `OK` or `NOT AVAILABLE`.
 
 **Default models** (override with `GEMINI_MODEL_SCORING`, `GEMINI_MODEL_TRANSCRIPTION`,
-`GEMINI_MODEL_DRAFTING`, `GEMINI_FALLBACK_MODEL`):
+`GEMINI_MODEL_DRAFTING`, `GEMINI_DRAFTING_FALLBACK_MODELS`, `GEMINI_FALLBACK_MODEL`):
 
 | Role | Default | Why |
 |---|---|---|
 | Scoring, keywords, news relevance | `gemini-3.1-flash-lite` | Fast, cheap classification; largest free-tier allowance |
 | Transcription | `gemini-3.1-flash-lite` | Supports audio input |
 | Drafting | `gemini-3.5-flash` | Better writing quality; only ~1 call per strong note |
-| Fallback (any role) | `gemini-3.1-flash-lite` | Tried when the main model is overloaded / rate-limited |
+| Drafting fallbacks | `gemini-3.8-flash`, then `gemini-3.1-flash-lite` | Each model has its own quota. flash-lite follows the Voice Skill noticeably less well ([docs/voice-validation.md](docs/voice-validation.md)), so it's the last resort, and Meera is told when a backup wrote her draft |
+| Fallback (classification roles) | `gemini-3.1-flash-lite` | Tried when the main model is overloaded / rate-limited |
 
-These IDs are the ones this Gemini account already used in an earlier project. Model names change over time,
+All of these IDs were verified with `npm run gemini:models` on this account during the build. Model names change over time,
 so run `npm run gemini:models` and set the variables if a default shows `NOT AVAILABLE`. Classification runs
 at temperature 0 and drafting at 0.7.
 
@@ -273,7 +274,8 @@ cp .env.example .env.local
 | `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-only key |
 | `TELEGRAM_ALLOWED_CHAT_IDS` | recommended | Comma-separated chat IDs allowed to use the bot. Empty = anyone who finds the bot (fine while setting up). |
 | `GEMINI_MODEL_SCORING` / `_TRANSCRIPTION` / `_DRAFTING` | no | Override default models (section 8) |
-| `GEMINI_FALLBACK_MODEL` | no | Model tried when the main one is overloaded |
+| `GEMINI_DRAFTING_FALLBACK_MODELS` | no | Comma-separated drafting fallbacks (default `gemini-3.8-flash,gemini-3.1-flash-lite`) |
+| `GEMINI_FALLBACK_MODEL` | no | Model tried when the main one is overloaded (classification roles; also last in the drafting chain) |
 | `NEWS_RELEVANCE_THRESHOLD` | no | 0-1, default `0.70`. Higher = news used less often. |
 | `NEWS_MAX_AGE_DAYS` | no | Only headlines newer than this count as "current". Default `30`. |
 
@@ -326,10 +328,15 @@ npm run eval:seed-notes
 ```
 
 ```bash
+npm run eval:controls
+```
+
+```bash
 npm run eval:voice -- 01 03
 ```
 
-The first appends a scoring run for the five case notes to `docs/seed-note-evaluation.md`. The second appends
+The first appends a scoring run for the five case notes to `docs/seed-note-evaluation.md`. The second scores
+clearly labelled synthetic weak/injection notes to check that rejection works. The third appends
 drafts for notes 01 and 03 to `docs/voice-validation-drafts.md`. Add `--with-news` to include the live
 Google News step.
 
@@ -511,8 +518,9 @@ from notes order by created_at desc limit 20;
 ```
 
 ```sql
--- Drafts awaiting review, with any news used
-select d.created_at, n.total_score, d.status, d.news_used, d.news_headline, d.unsupported_figures, d.draft_text
+-- Drafts awaiting review, with any news used and any warnings shown to Meera
+select d.created_at, n.total_score, d.status, d.drafting_model, d.news_used, d.news_headline,
+       d.unsupported_figures, d.review_warnings, d.draft_text
 from drafts d join notes n on n.id = d.note_id
 where d.status = 'pending' order by d.created_at desc;
 ```
@@ -545,9 +553,14 @@ select name, version, length(content) as chars, created_at from voice_skills whe
 
 ## 26. Known limitations
 
-- **Fact checking is partial.** The automatic check catches invented *figures* (digits). It can't catch an
-  invented claim written in words. That is exactly why Meera reviews every draft, and why the product never
-  publishes.
+- **Fact checking is partial.** The automatic checks catch invented *figures* (digits) and wording copied from
+  the Voice Skill. They can't catch an invented claim written in words. In validation, the fallback model once
+  wrote "The formulation is chemically stable" for a note saying the stability data *looked off*. That is
+  exactly why Meera reviews every draft, and why the product never publishes.
+- **Voice quality depends on the drafting model.** The intended model (`gemini-3.5-flash`) was only partly
+  evaluated because of free-tier quota exhaustion. The fallback `gemini-3.1-flash-lite` is noticeably more
+  formal (almost no contractions) and more formulaic. See [docs/voice-validation.md](docs/voice-validation.md).
+  Using a dedicated Gemini key for this project (not shared with other projects) avoids most of this.
 - **News is headline-level.** Google News RSS gives headline, publication, date and a link (Google's redirect
   link, not the publisher URL), and usually no useful snippet. The system never reads full articles, so a news
   angle is only as reliable as a headline. Meera must open the link before publishing.

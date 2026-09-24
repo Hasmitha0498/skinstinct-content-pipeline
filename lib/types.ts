@@ -56,6 +56,8 @@ export interface DraftRow {
   news_relevance_reason: string | null;
   unsupported_figures: string[];
   voice_skill_id: string | null;
+  drafting_model: string | null;
+  review_warnings: string[];
   approval_message_id: number | null;
   reviewed_at: string | null;
   created_at: string;
@@ -110,6 +112,8 @@ export interface DraftResult {
   post: string;
   newsUsed: boolean;
   unsupportedFigures: string[];
+  model: string; // the Gemini model that actually wrote it (primary or fallback)
+  warnings: string[]; // voice/format issues the redraft did not fix, shown to Meera
 }
 
 export interface ActiveVoiceSkill {
@@ -141,6 +145,8 @@ export type NewDraft = Pick<
   | 'news_relevance_reason'
   | 'unsupported_figures'
   | 'voice_skill_id'
+  | 'drafting_model'
+  | 'review_warnings'
 >;
 
 /** Persistence used by the pipeline. Implemented by Supabase in production and in memory in tests. */

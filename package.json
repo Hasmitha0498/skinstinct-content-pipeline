@@ -20,7 +20,8 @@
     "voice-skill:seed": "tsx --env-file=.env.local scripts/seed-voice-skill.ts",
     "gemini:models": "tsx --env-file=.env.local scripts/list-gemini-models.ts",
     "eval:seed-notes": "tsx --env-file=.env.local scripts/evaluate-seed-notes.ts",
-    "eval:voice": "tsx --env-file=.env.local scripts/validate-voice.ts"
+    "eval:voice": "tsx --env-file=.env.local scripts/validate-voice.ts",
+    "eval:controls": "tsx --env-file=.env.local scripts/evaluate-synthetic-controls.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

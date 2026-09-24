@@ -79,14 +79,14 @@ export function fakeAi(overrides: Partial<Record<keyof AiService, unknown>> = {}
     score: vi.fn(async () => score(9)),
     keywords: vi.fn(async () => ({ keywords: ['preservative', 'batch testing', 'CoA'], search_query: 'cosmetic batch testing preservative' })),
     evaluateNews: vi.fn(async () => ({ decision: null, rejectedBecause: 'not relevant' })),
-    draft: vi.fn(async () => ({ post: SAMPLE_POST, newsUsed: false, unsupportedFigures: [] as string[] })),
+    draft: vi.fn(async () => ({ post: SAMPLE_POST, newsUsed: false, unsupportedFigures: [] as string[], model: 'test-flash', warnings: [] as string[] })),
     ...overrides,
   };
   return ai as unknown as { [K in keyof AiService]: ReturnType<typeof vi.fn> & AiService[K] };
 }
 
 export const settings: PipelineSettings = {
-  models: { scoring: 'test-lite', transcription: 'test-lite', drafting: 'test-flash', fallback: undefined },
+  models: { scoring: 'test-lite', transcription: 'test-lite', drafting: 'test-flash', fallback: undefined, draftingFallbacks: [] },
   newsRelevanceThreshold: 0.7,
   newsMaxAgeDays: 30,
   allowedChatIds: null,

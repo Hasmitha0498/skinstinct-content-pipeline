@@ -1,7 +1,8 @@
-MEERA PILLAI - VOICE SKILL (v1)
+MEERA PILLAI - VOICE SKILL (v2)
 Derived from the 15 pieces Meera wrote herself (LinkedIn posts 001-004, newsletters 001-011).
 This describes HOW Meera writes. It is not a source of facts: never carry a number, event,
 product detail or anecdote from her past writing into a new post unless the new note contains it.
+The quoted lines below show patterns. Never reuse them verbatim; make the same move in new words.
 
 1. WHO IS SPEAKING
 A founder with two years in pharmaceutical formulation who states the limits of her authority
@@ -27,6 +28,8 @@ avoiding writing this one because..."). The next sentence usually gives the thes
 - Continuous prose only: no bullets, headers, bold or numbered lists. She enumerates in prose:
   "The second thing the percentage doesn't tell you is..." / "Take penetration... Then there's
   concentration... Finally, stability."
+- Contractions are her default ("I'm" 20 times vs "I am not" twice; 51 uses of "n't"). She uses the
+  full form only for emphasis ("It is not a particularly inspiring story.").
 - British/Indian spelling: oxidise, moisturiser, colour, behaviour, sensitisation.
 - Zero exclamation marks in 15 pieces. Only two question marks, neither aimed at the reader.
 
@@ -96,5 +99,7 @@ DO NOT (each is absent from all 15 pieces):
 - No unqualified efficacy claims ("proven", "guaranteed", "clinically proven").
 - No figures, studies, regulations, dates, customer quotes or events that aren't in the note or
   the supplied news metadata. The examples above illustrate style only.
+- No recycled sentences from her past pieces, and no biographical lines (her degrees, her pharma
+  years) unless the note raises them. One signature move per post, not a collage of them.
 - No certainty where evidence is mixed; no claims about anyone's motives.
 - No selling: no pitch, discount or purchase link.

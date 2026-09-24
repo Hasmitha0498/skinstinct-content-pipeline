@@ -119,6 +119,15 @@ function parseJson(text: string | undefined): unknown {
 
 /** Calls Gemini with limited retries, returning schema-validated data or throwing GeminiError. */
 export async function generateJson<T>(transport: GeminiTransport, call: JsonCall<T>, retry: Partial<RetryOptions> = {}): Promise<T> {
+  return (await generateJsonWithModel(transport, call, retry)).data;
+}
+
+/** Same as generateJson, but also reports which model produced the answer (primary or fallback). */
+export async function generateJsonWithModel<T>(
+  transport: GeminiTransport,
+  call: JsonCall<T>,
+  retry: Partial<RetryOptions> = {},
+): Promise<{ data: T; model: string }> {
   const opts = { ...defaultRetry, ...retry };
   const models = [...new Set(call.models.filter(Boolean))];
   const noThinkingModels = new Set<string>();
@@ -141,7 +150,7 @@ export async function generateJson<T>(transport: GeminiTransport, call: JsonCall
         if (!parsed.success) {
           throw new OutputError(`schema validation failed: ${parsed.error.issues.map((i) => `${i.path.join('.') || '(root)'} ${i.message}`).join('; ')}`);
         }
-        return parsed.data;
+        return { data: parsed.data, model };
       } catch (error) {
         // Some models reject the thinking setting with a 400; retry that model once without it.
         if (call.lowThinking && !noThinkingModels.has(model) && statusOf(error) === 400 && /thinking/i.test(String(error))) {
@@ -162,6 +171,8 @@ export async function generateJson<T>(transport: GeminiTransport, call: JsonCall
         });
         if (last.retry === 'never') throw new GeminiError(last.kind, `${call.label}: ${lastMessage}`);
         if (last.retry === 'next_model') break;
+        // A quota that resets later than we're willing to wait (e.g. a daily free-tier cap): move on now.
+        if (last.kind === 'rate_limited' && (last.waitMs ?? 0) > opts.maxRateLimitWaitMs) break;
         if (attempt < opts.attemptsPerModel) {
           const backoff = opts.baseDelayMs * 2 ** (attempt - 1) + Math.floor(Math.random() * 250);
           await opts.sleep(Math.min(Math.max(backoff, last.waitMs ?? 0), opts.maxRateLimitWaitMs));

@@ -15,8 +15,10 @@ async function main() {
   console.log(names.join('\n'));
   const configured = pipelineSettings(env).models;
   console.log('\nConfigured:');
-  for (const [role, id] of Object.entries(configured)) {
-    if (id) console.log(`  ${role.padEnd(13)} ${id}  ${names.includes(id) ? 'OK' : 'NOT AVAILABLE to this key'}`);
+  for (const [role, value] of Object.entries(configured)) {
+    for (const id of Array.isArray(value) ? value : value ? [value] : []) {
+      console.log(`  ${role.padEnd(17)} ${id}  ${names.includes(id) ? 'OK' : 'NOT AVAILABLE to this key'}`);
+    }
   }
 }
 

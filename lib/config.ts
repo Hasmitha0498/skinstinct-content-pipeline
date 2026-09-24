@@ -15,6 +15,9 @@ export const DEFAULT_MODELS = {
   transcription: 'gemini-3.1-flash-lite',
   drafting: 'gemini-3.5-flash',
   fallback: 'gemini-3.1-flash-lite',
+  // Drafting needs a Flash-class writer; each model has its own free-tier quota, so try another Flash
+  // model before dropping to flash-lite (which follows the Voice Skill noticeably less well).
+  draftingFallbacks: ['gemini-3.8-flash', 'gemini-3.1-flash-lite'],
 } as const;
 
 const optionalString = z
@@ -46,6 +49,7 @@ const envSchema = z.object({
   GEMINI_MODEL_TRANSCRIPTION: optionalString,
   GEMINI_MODEL_DRAFTING: optionalString,
   GEMINI_FALLBACK_MODEL: optionalString,
+  GEMINI_DRAFTING_FALLBACK_MODELS: optionalString,
   SUPABASE_URL: optionalString.refine((v) => v === undefined || /^https:\/\//.test(v), 'SUPABASE_URL must start with https://'),
   SUPABASE_SERVICE_ROLE_KEY: optionalString,
   NEWS_RELEVANCE_THRESHOLD: optionalNumber(0, 1),
@@ -79,7 +83,7 @@ export function requireEnv(name: SecretName, env: Env = readEnv()): string {
 }
 
 export interface PipelineSettings {
-  models: { scoring: string; transcription: string; drafting: string; fallback?: string };
+  models: { scoring: string; transcription: string; drafting: string; fallback?: string; draftingFallbacks?: string[] };
   newsRelevanceThreshold: number;
   newsMaxAgeDays: number;
   allowedChatIds: Set<number> | null; // null = anyone may use the bot (setup mode)
@@ -94,6 +98,9 @@ export function pipelineSettings(env: Env = readEnv()): PipelineSettings {
       transcription: env.GEMINI_MODEL_TRANSCRIPTION ?? DEFAULT_MODELS.transcription,
       drafting,
       fallback,
+      draftingFallbacks: env.GEMINI_DRAFTING_FALLBACK_MODELS
+        ? env.GEMINI_DRAFTING_FALLBACK_MODELS.split(',').map((m) => m.trim()).filter(Boolean)
+        : [...DEFAULT_MODELS.draftingFallbacks],
     },
     newsRelevanceThreshold: env.NEWS_RELEVANCE_THRESHOLD ?? 0.7,
     newsMaxAgeDays: env.NEWS_MAX_AGE_DAYS ?? 30,

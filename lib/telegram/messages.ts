@@ -63,6 +63,7 @@ export interface DraftMessageInput {
   post: string;
   news: Pick<NewsItem, 'title' | 'source' | 'publishedAt' | 'link'> | null; // only when the post used it
   unsupportedFigures: string[];
+  warnings?: string[];
 }
 
 export function draftMessage(input: DraftMessageInput): string {
@@ -71,6 +72,7 @@ export function draftMessage(input: DraftMessageInput): string {
   if (input.unsupportedFigures.length) {
     parts.push(`⚠ These figures aren't in your note or the news metadata. Check or remove them: ${input.unsupportedFigures.join(', ')}`);
   }
+  for (const warning of input.warnings ?? []) parts.push(`⚠ ${warning}`);
   if (input.post.length > 3000) parts.push(`Note: this draft is ${input.post.length} characters; LinkedIn allows 3,000.`);
   parts.push(`${SHORT_RULE}\nReply to this message with APPROVE or REJECT.`);
   return parts.join('\n\n');

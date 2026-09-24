@@ -232,3 +232,13 @@ describe('drafting prompt', () => {
     expect(scoreUser('X-NOTE').split('X-NOTE')).toHaveLength(2);
   });
 });
+
+describe('quota exhaustion', () => {
+  it('moves straight to the fallback model when the retry hint exceeds the wait cap (daily quota)', async () => {
+    const sleep = vi.fn(async (_ms: number) => {});
+    const { ctx, calls } = ctxWith([apiError(429, 'You exceeded your current quota. Please retry in 3600s'), JSON.stringify(validScore)], 'backup');
+    await scoreNote({ ...ctx, retry: { sleep } }, 'note');
+    expect(calls.map((c) => c.model)).toEqual(['lite', 'backup']);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+});

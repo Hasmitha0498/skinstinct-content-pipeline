@@ -8,7 +8,7 @@ import { describeError, redact } from '@/lib/log';
 describe('config', () => {
   it('applies documented defaults', () => {
     const s = pipelineSettings(readEnv({}));
-    expect(s.models).toEqual({ scoring: DEFAULT_MODELS.scoring, transcription: DEFAULT_MODELS.transcription, drafting: DEFAULT_MODELS.drafting, fallback: DEFAULT_MODELS.fallback });
+    expect(s.models).toEqual({ scoring: DEFAULT_MODELS.scoring, transcription: DEFAULT_MODELS.transcription, drafting: DEFAULT_MODELS.drafting, fallback: DEFAULT_MODELS.fallback, draftingFallbacks: [...DEFAULT_MODELS.draftingFallbacks] });
     expect(s.newsRelevanceThreshold).toBe(0.7);
     expect(s.newsMaxAgeDays).toBe(30);
     expect(s.allowedChatIds).toBeNull();

@@ -144,6 +144,8 @@ create table drafts (
   news_relevance_reason      text,
   unsupported_figures        text[] not null default '{}',
   voice_skill_id             uuid references voice_skills (id),
+  drafting_model             text,          -- which Gemini model wrote it (primary or fallback)
+  review_warnings            text[] not null default '{}', -- voice/format issues shown to Meera
   approval_message_id        bigint,
   reviewed_at                timestamptz,
   created_at                 timestamptz not null default now(),

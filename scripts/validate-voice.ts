@@ -19,7 +19,7 @@ async function main() {
   const noteIds = ids.length ? ids : ['01', '03'];
   const { ai, settings } = liveAi();
   const voice = await readFile(VOICE_SKILL_FILE, 'utf8');
-  let out = `\n## Run ${new Date().toISOString()}\n\n- Drafting model: \`${settings.models.drafting}\`, temperature 0.7\n- Drafting prompt + Voice Skill fingerprint: \`${draftPromptVersion(voice)}\`\n- News: ${withNews ? 'live Google News RSS + relevance check' : 'disabled (voice-only comparison)'}\n`;
+  let out = `\n## Run ${new Date().toISOString()}\n\n- Drafting model: \`${settings.models.drafting}\` (fallback \`${settings.models.fallback ?? 'none'}\`), temperature 0.7\n- Drafting prompt + Voice Skill fingerprint: \`${draftPromptVersion(voice)}\`\n- News: ${withNews ? 'live Google News RSS + relevance check' : 'disabled (voice-only comparison)'}\n`;
 
   for (const id of noteIds) {
     const note = (await readFile(path.join(process.cwd(), 'data', 'seed-notes', `note-${id}.txt`), 'utf8')).trim();
@@ -34,15 +34,22 @@ async function main() {
       newsLog = `- Search query: \`${kw.search_query}\`; RSS ${result.ok ? `returned ${result.items.length} items, ${candidates.length} recent` : `unavailable (${result.reason})`}\n`;
       if (candidates.length) {
         await pause(3000);
-        const evaluation = await ai.evaluateNews(note, candidates, settings.newsRelevanceThreshold);
-        news = evaluation.decision;
-        newsLog += `- Relevance: ${news ? `used "${news.item.title}" (confidence ${news.confidence})` : `none used (${evaluation.rejectedBecause})`}\n`;
+        const candidateList = candidates.map((c) => `  - "${c.title}" (${c.source ?? 'no source'}, ${c.publishedAt?.slice(0, 10) ?? 'no date'})`).join('\n');
+        newsLog += `- Candidates offered to the relevance check:\n${candidateList}\n`;
+        try {
+          const evaluation = await ai.evaluateNews(note, candidates, settings.newsRelevanceThreshold);
+          news = evaluation.decision;
+          newsLog += `- Relevance: ${news ? `used "${news.item.title}" (confidence ${news.confidence}; ${news.reason})` : `none used (${evaluation.rejectedBecause})`}\n`;
+        } catch (error) {
+          // Same behaviour as production: a failed relevance check means "draft without news".
+          newsLog += `- Relevance check failed (${error instanceof Error ? error.message.slice(0, 120) : 'error'}); drafted without news\n`;
+        }
       }
       await pause(3000);
     }
     const draft = await ai.draft({ note, scoreReason: score.reason, voiceSkill: voice, news });
-    const message = draftMessage({ score: score.total_score, post: draft.post, news: draft.newsUsed && news ? news.item : null, unsupportedFigures: draft.unsupportedFigures });
-    out += `\n### note-${id} (score ${score.total_score}/10)\n\n${newsLog}- Characters: ${draft.post.length}; unsupported figures: ${draft.unsupportedFigures.join(', ') || 'none'}\n\n\`\`\`text\n${message}\n\`\`\`\n`;
+    const message = draftMessage({ score: score.total_score, post: draft.post, news: draft.newsUsed && news ? news.item : null, unsupportedFigures: draft.unsupportedFigures, warnings: draft.warnings });
+    out += `\n### note-${id} (score ${score.total_score}/10)\n\n${newsLog}- Written by: \`${draft.model}\`${draft.model === settings.models.drafting ? '' : ' (fallback: primary model unavailable)'}\n- Characters: ${draft.post.length}; unsupported figures: ${draft.unsupportedFigures.join(', ') || 'none'}\n\n\`\`\`text\n${message}\n\`\`\`\n`;
     console.log(`note-${id}: drafted ${draft.post.length} chars`);
     await pause(4000);
   }

@@ -1,8 +1,8 @@
 // Draft generation in Meera's voice, followed by mechanical checks. Draft text is cleaned, never rewritten.
 import type { DraftResult, NewsDecision, NewsItem } from '../types';
 import { draftJsonSchema, draftSchema } from '../validation/schemas';
-import { generateJson } from './gemini';
-import { modelChain, type AiContext } from './context';
+import { generateJsonWithModel } from './gemini';
+import { draftingChain, type AiContext } from './context';
 import { findUnsupportedFigures } from './fact-check';
 import { draftSystem, draftUser } from './prompts';
 
@@ -42,6 +42,55 @@ export function postReferencesNews(post: string, item: NewsItem): boolean {
   return hits / tokens.length >= 0.6;
 }
 
+/** Lower-cased words with contractions expanded, so "don't" and "do not" compare equal. */
+function words(text: string): string[] {
+  const expanded = text
+    .toLowerCase()
+    .replace(/[’‘]/g, "'")
+    .replace(/\bcan't\b/g, 'can not')
+    .replace(/\bwon't\b/g, 'will not')
+    .replace(/n't\b/g, ' not')
+    .replace(/'m\b/g, ' am')
+    .replace(/'re\b/g, ' are')
+    .replace(/'ve\b/g, ' have')
+    .replace(/'ll\b/g, ' will')
+    .replace(/\b(it|that|there|here|what|she|he)'s\b/g, '$1 is');
+  return expanded.match(/[\p{L}\p{N}']+/gu) ?? [];
+}
+
+/**
+ * Runs of `n`+ words the draft copies from the Voice Skill's quoted examples (text in double quotes).
+ * Those quotes illustrate Meera's patterns; reproducing them makes a draft read as a collage of old posts.
+ * Wording that also appears in the note itself is allowed.
+ */
+export function findCopiedPhrases(post: string, voiceSkill: string, note: string, n = 5): string[] {
+  // Match every quote pair first, then drop short ones: filtering inside the regex would mis-pair quotes.
+  const quotes = [...voiceSkill.matchAll(/"([^"]*)"/g)].map((m) => m[1]!).filter((q) => q.length >= 12);
+  const grams = (tokens: string[]) => new Set(tokens.slice(0, Math.max(0, tokens.length - n + 1)).map((_, i) => tokens.slice(i, i + n).join(' ')));
+  const reference = new Set(quotes.flatMap((q) => [...grams(words(q))]));
+  const allowed = grams(words(note));
+  const tokens = words(post);
+  const covered = new Array<boolean>(tokens.length).fill(false);
+  for (let i = 0; i + n <= tokens.length; i++) {
+    const gram = tokens.slice(i, i + n).join(' ');
+    if (reference.has(gram) && !allowed.has(gram)) for (let k = i; k < i + n; k++) covered[k] = true;
+  }
+  const phrases: string[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    if (!covered[i]) continue;
+    let j = i;
+    while (j + 1 < tokens.length && covered[j + 1]) j++;
+    phrases.push(tokens.slice(i, j + 1).join(' '));
+    i = j;
+  }
+  return phrases;
+}
+
+/** Meera never writes a wall of text: a long post must be broken into paragraphs. */
+export function isWallOfText(post: string): boolean {
+  return post.length > 700 && post.split(/\n\s*\n/).length < 3;
+}
+
 function newsSourceText(item: NewsItem): string[] {
   return [item.title, item.source ?? '', item.snippet ?? '', item.publishedAt ? item.publishedAt.slice(0, 10) : ''];
 }
@@ -52,11 +101,11 @@ export async function draftPost(ctx: AiContext, input: DraftInput, logFields?: R
   let last: DraftResult | null = null;
 
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const raw = await generateJson(
+    const { data: raw, model } = await generateJsonWithModel(
       ctx.transport,
       {
         label: 'draft_post',
-        models: modelChain(ctx.models.drafting, ctx),
+        models: draftingChain(ctx),
         system: draftSystem(input.voiceSkill),
         parts: [
           {
@@ -81,16 +130,28 @@ export async function draftPost(ctx: AiContext, input: DraftInput, logFields?: R
     const unsupportedFigures = findUnsupportedFigures(post, sources);
     // News can only count as used if we supplied it; if the text visibly uses it, show the block regardless of the flag.
     const newsUsed = input.news ? raw.news_used || postReferencesNews(post, input.news.item) : false;
-    last = { post, newsUsed, unsupportedFigures };
 
     const problems: string[] = [];
     if (unsupportedFigures.length) {
       problems.push(`It contained figures that appear in neither the note nor the news metadata: ${unsupportedFigures.join(', ')}. Remove them; do not substitute other figures.`);
     }
     if (post.length > LINKEDIN_MAX_CHARS - 100) problems.push(`It was ${post.length} characters; keep it under 2,900.`);
+    const copied = findCopiedPhrases(post, input.voiceSkill, input.note);
+    if (copied.length) {
+      problems.push(`It copied wording from the Voice Skill examples: "${copied.join('"; "')}". Say it in new words, or leave the move out.`);
+    }
+    if (isWallOfText(post)) problems.push('It was one block of text. Break it into 6 to 10 short paragraphs separated by blank lines.');
+
+    // Plain-language notes for Meera about anything the redraft didn't fix (figures are listed separately).
+    const warnings = [
+      ...(copied.length ? [`Wording copied from your past posts: "${copied.join('"; "')}"`] : []),
+      ...(isWallOfText(post) ? ['One long paragraph: needs breaking up'] : []),
+      ...(model !== ctx.models.drafting ? [`Written by the backup model (${model}); check the voice closely`] : []),
+    ];
+    last = { post, newsUsed, unsupportedFigures, model, warnings };
     if (problems.length === 0) return last;
     revisionNotes = problems;
   }
-  // Second attempt still has issues: return it anyway. Unsupported figures are shown to Meera as a warning.
+  // The second attempt still has issues: return it anyway, with warnings Meera will see in Telegram.
   return last as DraftResult;
 }

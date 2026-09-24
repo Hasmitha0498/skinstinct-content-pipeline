@@ -111,3 +111,81 @@ describe('Telegram draft message', () => {
     expect(draftMessage({ score: 7, post: 'P', news: null, unsupportedFigures: [] })).not.toContain('NEWS SOURCE');
   });
 });
+
+describe('voice guards', () => {
+  const VOICE = 'She deflates: "It is not a particularly inspiring story." and "If the answer is vague or doesn\'t arrive, that is also useful information."';
+
+  it('finds wording copied from the Voice Skill quotes, but not wording from the note', async () => {
+    const { findCopiedPhrases } = await import('@/lib/ai/draft-post');
+    expect(findCopiedPhrases('Honestly, it is not a particularly inspiring story at all.', VOICE, 'a note')).toEqual(['it is not a particularly inspiring story']);
+    expect(findCopiedPhrases('If nobody replies, that is also useful information.', VOICE, 'a note')).toEqual(['that is also useful information']);
+    expect(findCopiedPhrases('It is not a particularly inspiring story.', VOICE, 'I know it is not a particularly inspiring story')).toEqual([]);
+    expect(findCopiedPhrases('A completely original sentence about pH drift.', VOICE, 'n')).toEqual([]);
+  });
+
+  it('flags a long single-paragraph wall of text', async () => {
+    const { isWallOfText } = await import('@/lib/ai/draft-post');
+    expect(isWallOfText('word '.repeat(200))).toBe(true);
+    expect(isWallOfText(`${'a '.repeat(150)}\n\n${'b '.repeat(150)}\n\n${'c '.repeat(150)}`)).toBe(false);
+    expect(isWallOfText('short post')).toBe(false);
+  });
+
+  it('asks for a redraft when the first attempt copies examples or is one block', async () => {
+    const wall = `It is not a particularly inspiring story. ${'The supplier changed the blend. '.repeat(30)}`;
+    const good = `A clean opening.\n\n${'The supplier changed the blend. '.repeat(10)}\n\nA plain ending.`;
+    const { ctx, calls } = ctxReturning({ post: wall }, { post: good });
+    const result = await draftPost(ctx, { note: NOTE, scoreReason: 'r', voiceSkill: VOICE, news: null });
+    const feedback = (calls[1]!.parts[0] as { text: string }).text;
+    expect(feedback).toContain('copied wording from the Voice Skill examples');
+    expect(feedback).toContain('one block of text');
+    expect(result.post).toBe(good);
+  });
+});
+
+describe('drafting model chain and warnings', () => {
+  it('tries Flash-class drafting fallbacks before the lite fallback, and warns when a backup wrote it', async () => {
+    const calls: string[] = [];
+    const quota = Object.assign(new Error('{"error":{"code":429,"message":"quota. Please retry in 3600s"}}'), { status: 429 });
+    const ctx: AiContext = {
+      transport: async (req) => {
+        calls.push(req.model);
+        if (req.model === 'flash') throw quota;
+        return JSON.stringify({ post: `Clean post.\n\n${LONG}\n\nEnd.`, news_used: false });
+      },
+      models: { scoring: 'lite', transcription: 'lite', drafting: 'flash', fallback: 'lite', draftingFallbacks: ['flash-2', 'lite'] },
+      retry: { sleep: async () => {} },
+    };
+    const result = await draftPost(ctx, { note: NOTE, scoreReason: 'r', voiceSkill: 'v', news: null });
+    expect(calls).toEqual(['flash', 'flash-2']);
+    expect(result.model).toBe('flash-2');
+    expect(result.warnings).toEqual(['Written by the backup model (flash-2); check the voice closely']);
+  });
+
+  it('shows remaining warnings in the Telegram draft', () => {
+    const text = draftMessage({ score: 8, post: 'P', news: null, unsupportedFigures: [], warnings: ['One long paragraph: needs breaking up'] });
+    expect(text).toContain('⚠ One long paragraph: needs breaking up');
+    expect(text.indexOf('⚠ One long')).toBeLessThan(text.indexOf('Reply to this message'));
+  });
+});
+
+describe('copy check ignores contraction differences', () => {
+  it('catches "I do not have a medical degree" against the quote "I don\'t have a medical degree"', async () => {
+    const { findCopiedPhrases } = await import('@/lib/ai/draft-post');
+    const voice = 'She states limits ("I\'m not a dermatologist. I don\'t have a medical degree.").';
+    expect(findCopiedPhrases('To be clear, I do not have a medical degree.', voice, 'note')).toEqual(['i do not have a medical degree']);
+  });
+});
+
+describe('copy check against the real Voice Skill file', () => {
+  it('catches the phrases observed being copied in live validation runs', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { findCopiedPhrases } = await import('@/lib/ai/draft-post');
+    const voice = readFileSync(`${__dirname}/../data/voice-skill.txt`, 'utf8');
+    const copied = (text: string) => findCopiedPhrases(text, voice, 'an unrelated note about batch testing');
+    expect(copied('If the explanation remains vague, that is also useful information.')).toEqual(['that is also useful information']);
+    expect(copied('It is not a particularly inspiring story.')).toEqual(['it is not a particularly inspiring story']);
+    expect(copied('I do not have a medical degree or a background in dermatology.')).toEqual(['i do not have a medical degree']);
+    expect(copied('The vehicle, the base that carries the actives, matters.')).toEqual(['the vehicle the base that carries the actives']);
+    expect(copied('The supplier changed the preservative blend without telling us.')).toEqual([]);
+  });
+});
