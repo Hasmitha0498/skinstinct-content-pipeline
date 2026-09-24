@@ -189,3 +189,27 @@ describe('copy check against the real Voice Skill file', () => {
     expect(copied('The supplier changed the preservative blend without telling us.')).toEqual([]);
   });
 });
+
+describe('certainty guard', () => {
+  it('flags absolutes the note does not use, and allows ones it does', async () => {
+    const { findCertaintyUpgrades } = await import('@/lib/ai/draft-post');
+    const note = "The batch isn't unsafe but the texture is different. That's the entire problem. The customer never connects the two.";
+    expect(findCertaintyUpgrades('The batch is entirely safe to use.', 'The batch isn\'t unsafe.')).toEqual(['entirely safe']);
+    expect(findCertaintyUpgrades('That is entirely the problem, and she never connects them.', note)).toEqual([]);
+    expect(findCertaintyUpgrades('This is always true and clinically proven.', note)).toEqual(['always true', 'proven']);
+  });
+
+  it('does not flag her habitual opener as copied', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { findCopiedPhrases } = await import('@/lib/ai/draft-post');
+    const voice = readFileSync(`${__dirname}/../data/voice-skill.txt`, 'utf8');
+    expect(findCopiedPhrases('I want to explain why we are holding this batch.', voice, 'note')).toEqual([]);
+  });
+
+  it('asks for a redraft when certainty is upgraded', async () => {
+    const { ctx, calls } = ctxReturning({ post: `The batch is entirely safe.\n\n${LONG}\n\nEnd.` }, { post: `The batch isn't unsafe.\n\n${LONG}\n\nEnd.` });
+    const result = await draftPost(ctx, { note: "The batch isn't unsafe.", scoreReason: 'r', voiceSkill: 'v', news: null });
+    expect((calls[1]!.parts[0] as { text: string }).text).toContain('more absolute wording than the note: "entirely safe"');
+    expect(result.warnings).toEqual([]);
+  });
+});

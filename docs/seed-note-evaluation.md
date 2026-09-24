@@ -99,3 +99,34 @@ recomputation. The change was not aimed at making any note pass or fail. After i
   tension that the clean-beauty audience is her audience) rather than restating newsletter_009.
 - **Known limitation:** the scorer sees only the note, not Meera's back catalogue, so it can only judge novelty
   when the note itself flags repetition.
+
+## Run 2026-09-24T11:16:37.907Z
+
+- Model: `gemini-3.5-flash` (fallback `gemini-3.1-flash-lite`), temperature 0
+- Scoring prompt fingerprint: `4283df8730`
+- Notes fingerprint: `5fe796355c`
+- Breakdown key: I = insight, S = specificity, R = relevance, E = evidence, C = completeness (each 0-2)
+
+| Note | Score | Breakdown | Decision | Model's reasoning |
+|---|---|---|---|---|
+| note-01 | **10/10** | I2 S2 R2 E2 C2 | develop | Your note provides a highly specific, first-hand account of a manufacturing issue where a supplier's unannounced preservative change altered your product's pH and texture. This perfectly illustrates the hidden risks in 'same formula' reorders and the necessity of rigorous CoA baseline checks. |
+| note-02 | **10/10** | I2 S2 R2 E2 C2 | develop | Your note outlines a clear, real-world customer interaction that illustrates a common skincare mistake: applying a heavy occlusive moisturizer before an active serum, which blocks absorption. It contains specific details about the timeline, the mechanism of action, and the customer's misattribution of the issue. |
+| note-03 | **10/10** | I2 S2 R2 E2 C2 | develop | Your note provides a clear, first-hand account of a supplier discrepancy regarding a 'cold-pressed' emollient, backed by specific temperature data from their production log. This highlights the critical importance of rigorous ingredient vetting and documentation in formulation science. |
+| note-04 | **9/10** | I2 S2 R2 E1 C2 | develop | You provide a clear, nuanced insight that moves beyond the standard 'brick and mortar' metaphor by distinguishing between different types of barrier damage (over-exfoliation vs. lipid depletion vs. genetic factors). This directly leverages your formulation background to educate consumers. |
+| note-05 | **7/10** | I2 S1 R2 E1 C1 | develop | You offer a strong insight into the tension between clean beauty marketing and actual formulation quality, though you note that you have shared this perspective before and lack a clear new angle. |
+
+- **note-01** improvement hint: Keep the focus on the specific mechanism of how a 0.4 pH drop affected the emollient blend's texture, as this concrete detail powerfully demonstrates your formulation expertise.
+- **note-02** improvement hint: Keep the focus on the specific mechanism of how occlusive barriers block active serums and how customers often misattribute the resulting congestion to the wrong product.
+- **note-03** improvement hint: Keep the focus on the specific contrast between the spec sheet claim and the actual production log temperatures to illustrate why founders must audit their supply chain.
+- **note-04** improvement hint: Keep the focus on the specific distinction between physical cell removal (corneocytes) and lipid depletion, as this directly explains why different barrier repair products are needed for different issues.
+- **note-05** improvement hint: Focus the post on the internal tension you face as a formulator balancing intellectual discomfort with commercial reality.
+
+## Model comparison (run 3)
+
+Run 3 uses the **same prompt** (`4283df8730`) on `gemini-3.5-flash` instead of flash-lite, to test the Answer
+Key's warning that "if everything passes, the scoring prompt is too lenient". Result: identical scores for
+note-01 to note-04; note-05 drops to 7/10 (specificity 1, completeness 1, novelty caveat stated). Two different
+models agree, and the synthetic reminder, vague note and injection attempt all score 0/10. So the rubric does
+separate contrasting notes, which is the Answer Key's test. What it can't do is rank strong notes against
+each other: three of five hit 10/10, a ceiling effect of a five-part 0-2 rubric. The production default stays
+flash-lite (it agrees with the stronger model, and it is cheaper and has more quota).

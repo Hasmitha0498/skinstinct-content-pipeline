@@ -30,6 +30,9 @@ export function cleanPost(post: string): string {
     .trim();
 }
 
+/** Her own recurring frames (e.g. "I want to explain" appears in 3 of 15 pieces): reusing them isn't pastiche. */
+const HABITUAL_FRAMES = ['I want to explain why'];
+
 const STOPWORDS = new Set(['about', 'after', 'their', 'there', 'these', 'those', 'which', 'while', 'where', 'would', 'could', 'should', 'being', 'other', 'under', 'still', 'says', 'india', 'indian']);
 
 /** Safety net for the mandatory source block: if the post visibly leans on the news item, treat it as used. */
@@ -68,7 +71,7 @@ export function findCopiedPhrases(post: string, voiceSkill: string, note: string
   const quotes = [...voiceSkill.matchAll(/"([^"]*)"/g)].map((m) => m[1]!).filter((q) => q.length >= 12);
   const grams = (tokens: string[]) => new Set(tokens.slice(0, Math.max(0, tokens.length - n + 1)).map((_, i) => tokens.slice(i, i + n).join(' ')));
   const reference = new Set(quotes.flatMap((q) => [...grams(words(q))]));
-  const allowed = grams(words(note));
+  const allowed = new Set([...grams(words(note)), ...HABITUAL_FRAMES.flatMap((f) => [...grams(words(f))])]);
   const tokens = words(post);
   const covered = new Array<boolean>(tokens.length).fill(false);
   for (let i = 0; i + n <= tokens.length; i++) {
@@ -84,6 +87,24 @@ export function findCopiedPhrases(post: string, voiceSkill: string, note: string
     i = j;
   }
   return phrases;
+}
+
+/** Absolute words Meera almost never uses (6 in ~7,000 published words). A draft must not add them. */
+const ABSOLUTES = ['entirely', 'completely', 'totally', 'perfectly', 'absolutely', 'always', 'never', 'guaranteed', 'guarantee', 'guarantees', 'proven', 'definitely', 'certainly', 'undoubtedly', 'impossible', 'impermeable'];
+const stem = (w: string) => w.toLowerCase().replace(/ly$/, '');
+
+/**
+ * Absolute wording in the draft that the note doesn't use ("isn't unsafe" becoming "entirely safe").
+ * Returns each occurrence with the following word for context.
+ */
+export function findCertaintyUpgrades(post: string, note: string): string[] {
+  const noteStems = new Set(words(note).map(stem));
+  const found = new Set<string>();
+  const pattern = new RegExp(`\\b(${ABSOLUTES.join('|')})\\b(\\s+[\\p{L}-]+)?`, 'giu');
+  for (const m of post.matchAll(pattern)) {
+    if (!noteStems.has(stem(m[1]!))) found.add(m[0]!.toLowerCase().trim());
+  }
+  return [...found];
 }
 
 /** Meera never writes a wall of text: a long post must be broken into paragraphs. */
@@ -140,11 +161,16 @@ export async function draftPost(ctx: AiContext, input: DraftInput, logFields?: R
     if (copied.length) {
       problems.push(`It copied wording from the Voice Skill examples: "${copied.join('"; "')}". Say it in new words, or leave the move out.`);
     }
+    const upgrades = findCertaintyUpgrades(post, input.note);
+    if (upgrades.length) {
+      problems.push(`It used more absolute wording than the note: "${upgrades.join('"; "')}". Keep the note's own level of certainty and its hedges.`);
+    }
     if (isWallOfText(post)) problems.push('It was one block of text. Break it into 6 to 10 short paragraphs separated by blank lines.');
 
     // Plain-language notes for Meera about anything the redraft didn't fix (figures are listed separately).
     const warnings = [
       ...(copied.length ? [`Wording copied from your past posts: "${copied.join('"; "')}"`] : []),
+      ...(upgrades.length ? [`Stronger wording than your note: "${upgrades.join('"; "')}"`] : []),
       ...(isWallOfText(post) ? ['One long paragraph: needs breaking up'] : []),
       ...(model !== ctx.models.drafting ? [`Written by the backup model (${model}); check the voice closely`] : []),
     ];

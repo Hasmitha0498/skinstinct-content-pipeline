@@ -17,9 +17,9 @@ Flash models during these runs, and later the Flash models returned 503 "high de
 | 4 | v2 + guards + warnings | all `gemini-3.1-flash-lite` (fallback) |
 | 5 (with news) | v2 + guards + warnings | all `gemini-3.1-flash-lite` (fallback) |
 
-So **13 of the 14 drafts come from the fallback model**, and only one from the intended drafting model. The
-findings below are therefore mostly about flash-lite. **Still to do:** once the quota resets, run
-`npm run eval:voice -- 01 02 03` and append a comparison with the current prompt on `gemini-3.5-flash`.
+So **13 of the 14 drafts in runs 1-5 come from the fallback model**. Runs 6-7 below were made later with a
+dedicated key for this project and were all written by the intended `gemini-3.5-flash`. See
+[Runs 6-7: the intended drafting model](#runs-6-7-the-intended-drafting-model).
 
 ## Measured against the corpus
 
@@ -92,6 +92,31 @@ like a collage of Meera's greatest hits is not the same as a draft in her voice.
 7. **Quota handling:** a 429 whose retry time is longer than 20 s (a daily cap) moves to the next model
    immediately instead of waiting.
 
+## Runs 6-7: the intended drafting model
+
+A dedicated Gemini key restored `gemini-3.5-flash`. Run 6 used the v2 prompt, Voice Skill and guards. Run 7
+added the certainty guard described below.
+
+| | flash-lite (runs 2-5) | 3.5-flash (runs 6-7) |
+|---|---|---|
+| Paragraphing | 1-7; walls of text until the guard | 4-7 in every draft |
+| Contractions | 1 in 13 drafts | present in 3 of 5 (0-7 per draft; "It isn't cold-pressing.", "I don't know", "we didn't use the ingredient"); still below her default |
+| Verbatim pastiche | frequent, survived redrafts | none (only her own recurring opener "I want to explain why", now allowlisted: it appears in 3 of her 15 pieces) |
+| Invented figures | none | none |
+| Certainty upgrades | "entirely safe" (run 1) | run 6 still wrote "The batch is **entirely safe** to use" → **certainty guard added** → run 7: "the batch is not unsafe", "I think our customers will notice" |
+| Invented details | "chemically stable", wrong actor | "A few weeks ago" / "last week" (the note says "recently"), "a legacy document that was never updated", "we would have passed that claim on to you", "This is a regular occurrence… that rarely gets discussed" |
+
+**Certainty guard** (`findCertaintyUpgrades`): Meera uses absolute words about 6 times in 7,000 published
+words. Any absolute ("entirely", "always", "proven", "guarantees"…) that the note doesn't use triggers a
+redraft, and if it survives, a warning (`⚠ Stronger wording than your note: "entirely safe"`). It sometimes
+flags harmless uses ("rely entirely on a supplier's summary sheet"). That was accepted, because the cost of a
+false alarm is one glance.
+
+**Conclusion for the intended model:** structure, rhythm and restraint now read like Meera, and contractions are improving but inconsistent.
+The remaining failure is small invented *narrative* details (timing words, plausible-sounding generalisations
+about the industry). No mechanical check catches these reliably. They are the reason every draft is
+reviewed, and the most useful thing for Meera to look for when she reads one.
+
 ## Verdict
 
 - **Safe to put in front of Meera for review:** yes. Hard rules (no invented figures, no hype, no pitch, no
@@ -99,6 +124,6 @@ like a collage of Meera's greatest hits is not the same as a draft in her voice.
 - **Publishable without editing:** no, and it isn't meant to be. The fallback model produces serviceable
   drafts with correct structure, but they are more formal than Meera and occasionally assert things the note
   doesn't (run 3 / 01). Those are exactly the errors the APPROVE/REJECT boundary exists to catch.
-- **Not yet verified:** v2 prompt quality on the intended `gemini-3.5-flash` model (quota). Contractions remain
-  unsolved on flash-lite. If they're still missing on 3.5-flash, a next step is adding two or three of her
-  contracted sentences as explicit examples in the Voice Skill.
+- **Intended model verified (runs 6-7):** with `gemini-3.5-flash`, drafts are close to her voice and need
+  light edits, mainly deleting an invented timing word or generalisation. Flash-lite remains a noticeably
+  weaker fallback, and Meera is told when it wrote a draft.

@@ -333,3 +333,143 @@ This is not a criticism of the intent behind these movements. It is an observati
 ─────────────────
 Reply to this message with APPROVE or REJECT.
 ```
+
+## Run 2026-09-24T11:16:50.902Z
+
+- Drafting model: `gemini-3.5-flash` (fallback `gemini-3.1-flash-lite`), temperature 0.7
+- Drafting prompt + Voice Skill fingerprint: `0ee99d427b`
+- News: disabled (voice-only comparison)
+
+### note-01 (score 10/10)
+
+- Written by: `gemini-3.5-flash`
+- Characters: 1951; unsupported figures: none
+
+```text
+Draft ready — score 10/10
+
+Our latest production run - batch fourteen - came back from our manufacturer with pH stability data that did not align with our baseline.
+
+I want to explain why we are holding this batch, because it illustrates a common gap in how skincare manufacturing actually works. The assumption that a reorder of the same formula will yield the exact same product is often incorrect.
+
+When we reviewed the documentation, we found that the finished product pH had dropped by approximately 0.4 units. While a shift of that scale sounds negligible, it was enough to alter the behaviour of our emollient blend. The batch is entirely safe to use. The texture is simply different from our standard, and we think our customers would notice the difference. We have decided to hold the entire run.
+
+The cause was a quiet change at the ingredient level. Our supplier had modified the preservative system they sell to us, making it slightly more acidic. They had issued a revised specification sheet three months ago, but the document was buried in our inbox. We reordered what we assumed was the identical raw material, but the material itself had changed.
+
+I'm not suggesting the supplier acted with poor intentions. These administrative updates happen regularly in raw material supply chains. I'm saying that assuming a reorder of the same ingredient code guarantees an identical chemical profile is a mistake.
+
+If you aren't actively comparing the Certificate of Analysis - the CoA - of every incoming batch against your original formulation baseline, these shifts remain invisible until the product is already bottled. In our case, the discrepancy was caught because we verify these metrics, but the communication gap should have been caught earlier.
+
+A formula is only as stable as the documentation that tracks its inputs. Checking every CoA against a baseline is tedious, but it is the only way to ensure the product in the bottle matches the product you designed.
+
+⚠ Wording copied from your past posts: "i want to explain why"
+
+─────────────────
+Reply to this message with APPROVE or REJECT.
+```
+
+### note-02 (score 10/10)
+
+- Written by: `gemini-3.5-flash`
+- Characters: 1654; unsupported figures: none
+
+```text
+Draft ready — score 10/10
+
+A customer messaged me recently to say that the serum she had been using successfully for four months had suddenly stopped absorbing. Her skin was feeling congested, and she was convinced the formulation had failed. She had not changed the serum, but two weeks prior she had switched to a heavier, likely silicone-based occlusive moisturiser. More importantly, she was applying the moisturiser first.
+
+I want to explain why this happens, because the source of the issue is rarely the product that gets blamed.
+
+An occlusive agent - which is designed to form a physical barrier on the stratum corneum to prevent water loss - will effectively block lighter, water-based formulations from penetrating the skin. When a serum is applied over a heavy occlusive, the active ingredients cannot reach their target. They simply sit on top of the barrier.
+
+The serum was not failing. It was blocked.
+
+I am not suggesting the new moisturiser was a poor product. It was doing exactly what it was formulated to do. The issue is entirely one of sequencing.
+
+When a skincare routine begins to fail, we naturally look for the variable that feels different. Because the serum suddenly felt heavy and unabsorbing on her skin, she assumed the serum itself had changed. In reality, the serum was behaving exactly as it always had, but it was being asked to penetrate an impermeable layer.
+
+Before deciding a product has stopped working, it is worth looking at the barrier properties of what you applied before it. If you are putting a water-based active on top of a heavy lipid or silicone layer, the formulation is not failing you. You are simply preventing it from working.
+
+⚠ Wording copied from your past posts: "i want to explain why"
+
+─────────────────
+Reply to this message with APPROVE or REJECT.
+```
+
+### note-03 (score 10/10)
+
+- Written by: `gemini-3.5-flash`
+- Characters: 1827; unsupported figures: none
+
+```text
+Draft ready — score 10/10
+
+A few weeks ago we were reviewing a potential new emollient ingredient for our formulation work. The specification sheet from the supplier listed the material as cold-pressed. I want to explain why we ended up rejecting it, because it illustrates the gap that often exists between a raw material's marketing claims and its actual manufacturing history.
+
+Cold-pressing is a temperature-controlled extraction process - typically kept below 49 degrees Celsius - designed to preserve sensitive fatty acid profiles and prevent the degradation of heat-sensitive compounds. When you exceed this threshold, the delicate chemistry of the plant oil can change.
+
+When I asked the supplier for the processing documentation, they eventually shared a production log. The logs showed extraction temperatures running between 70 and 85 degrees Celsius. This is standard thermal extraction. It is not cold-pressing.
+
+I am not suggesting there was a deliberate intent to deceive. It is entirely possible this was an administrative labelling error on the specification sheet, or a legacy document that was never updated. I do not know the reason, and I do not want to guess at the supplier's motive.
+
+What I am saying is that without requesting the raw production logs, we would have formulated with this ingredient. We would have passed that cold-pressed claim on to you, believing it to be true.
+
+We chose not to proceed with this ingredient. It is a quiet, frustrating friction that happens regularly during sourcing, but it is why we do not rely on summary sheets alone.
+
+If you are a founder or a formulator, the practical step is to look past the initial specification sheet. Ask for the batch manufacturing records or the raw production logs. If those documents are difficult to obtain, or if they reveal a discrepancy, that is your answer.
+
+⚠ Wording copied from your past posts: "i want to explain why"
+
+─────────────────
+Reply to this message with APPROVE or REJECT.
+```
+
+## Run 2026-09-24T11:19:31.331Z
+
+- Drafting model: `gemini-3.5-flash` (fallback `gemini-3.1-flash-lite`), temperature 0.7
+- Drafting prompt + Voice Skill fingerprint: `0ee99d427b`
+- News: disabled (voice-only comparison)
+
+### note-01 (score 10/10)
+
+- Written by: `gemini-3.5-flash`
+- Characters: 1851; unsupported figures: none
+
+```text
+Draft ready — score 10/10
+
+When we received the stability data for our fourteenth batch last week, the pH readings did not match our baseline specifications. I am sharing this because it illustrates a common gap in contract manufacturing - the assumption that reordering an identical formulation guarantees an identical finished product. It often does not.
+
+The discrepancy was not a formulation error on our part, but a documentation oversight. Our supplier had modified their preservative blend three months ago and sent a revised specification sheet that was overlooked in our inbox. The new preservative system is more acidic than the original version. This change dropped the pH of the finished batch by approximately 0.4 units - a shift that seems minor but is sufficient to push the formulation out of the optimal range for our emollient blend.
+
+I want to clarify that the batch is not unsafe. However, the lower pH alters the physical behaviour of the emulsion, creating a texture that I think our customers will notice. Because of this difference, we are holding the entire batch rather than releasing it.
+
+This is a regular occurrence in cosmetic manufacturing that rarely gets discussed. Suppliers frequently update raw materials, change source facilities, or alter stabiliser blends without active notification. If a brand relies solely on the manufacturer to flag these changes, they often go unnoticed.
+
+The only reliable way to prevent this is to audit every Certificate of Analysis - the CoA - against an established baseline for every single batch before production begins. Relying on the name of an ingredient or a previous successful run is not enough. We missed the update in our documentation, and we are holding the batch as a consequence. It is an expensive reminder that formulation is only half the work; the rest is continuous administrative vigilance.
+
+─────────────────
+Reply to this message with APPROVE or REJECT.
+```
+
+### note-03 (score 10/10)
+
+- Written by: `gemini-3.5-flash`
+- Characters: 1129; unsupported figures: none
+
+```text
+Draft ready — score 10/10
+
+We recently reviewed a potential new emollient ingredient from a supplier. The technical specification sheet listed the material as cold-pressed. Because we verify these details, we asked the supplier for the actual processing documentation.
+
+Cold-pressing is a highly temperature-controlled extraction method - typically kept below 49 degrees Celsius - that preserves delicate fatty acid profiles and prevents heat-sensitive compounds from degrading. When the supplier eventually sent the production logs, the records showed the extraction temperature actually ran between 70 and 85 degrees Celsius. That is standard heat processing. It isn't cold-pressing.
+
+I don't know if this was simply a labelling error on the specification sheet or some other issue. I'm not making assumptions about the supplier's motives. The practical result is that we didn't use the ingredient, though we would have if we hadn't requested the logs.
+
+It is easy to rely entirely on a supplier's summary sheet. However, asking for the primary manufacturing data is often the only way to ensure the physical reality matches what is written on the label.
+
+⚠ Stronger wording than your note: "entirely on"
+
+─────────────────
+Reply to this message with APPROVE or REJECT.
+```

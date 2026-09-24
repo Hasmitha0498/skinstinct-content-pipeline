@@ -179,9 +179,15 @@ docs/                      components map, checklist, evaluations
 2. Send `/newbot`, choose a display name (e.g. `Skinstinct Drafts`) and a username ending in `bot`.
 3. BotFather replies with a **token** like `123456789:AA...`. This is a password for your bot: never share it,
    commit it, or paste it into a browser URL.
-If Meera prefers dropping notes into a private **channel** (her current habit): add the bot to the channel
-as an **administrator** with permission to post. The bot reads channel posts and replies in the channel.
-A direct chat with the bot is the simplest option.
+**Meera's capture channel (her current habit).** The case and the Answer Key have Meera dropping notes into her
+own Telegram channel, and the bot works there:
+
+1. Open the channel → **Administrators** → **Add Admin** → search for your bot → allow **Post Messages**.
+2. Set `TELEGRAM_ALLOWED_CHAT_IDS` to the channel's ID (a negative number starting `-100`, e.g.
+   `-1004307843642`). With only the channel allowed, direct messages to the bot get "This bot is private".
+   Add both IDs, comma-separated, if you want both.
+3. Post a note in the channel. The draft arrives in the channel as a reply to the note. Reply to the draft
+   with APPROVE or REJECT in the channel.
 
 ## 8. Gemini API setup
 
