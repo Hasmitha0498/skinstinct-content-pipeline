@@ -501,6 +501,7 @@ without news. Most notes won't have a genuinely relevant headline, and that's ex
 | Symptom | Likely cause / fix |
 |---|---|
 | Bot doesn't answer at all | `npm run telegram:webhook-info`. A `401` means the secret in Vercel differs from `.env.local`: fix it, redeploy, re-run `telegram:set-webhook`. A `500` means a variable is missing in Vercel: check Logs for `webhook.deps_failed` / `webhook.secret_not_configured`. |
+| `/api/webhook` returns 500 and Vercel Logs show `webhook.secret_not_configured` | The variable exists in Vercel but its value is empty (e.g. an empty line pasted from `.env.example`). Re-enter it, then **Redeploy**: variables only apply to new deployments. |
 | "This bot is private…" | Your chat ID isn't in `TELEGRAM_ALLOWED_CHAT_IDS`. |
 | "…couldn't score it right now…" | Gemini failed after retries (rate limit, outage or an invalid key). Check Logs for `gemini.attempt_failed`. Run `npm run gemini:models`. |
 | Draft never arrives but a note was stored | Check Logs for `note.failed` or `draft.delivery_failed`. The `notes.processing_status` and `error_message` columns show where it stopped. |
