@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // unreachable. Vercel only ships files it can trace, so include it explicitly.
   outputFileTracingIncludes: {
     '/api/webhook': ['./data/voice-skill.txt'],
+    '/api/status': ['./data/voice-skill.txt'],
   },
   poweredByHeader: false,
 };

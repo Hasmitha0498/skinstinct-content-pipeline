@@ -1,0 +1,35 @@
+{
+  "provenance": "Real output of the pipeline code with real Telegram, Gemini, Google News RSS and Supabase (run from the local poller, the same code path as the webhook) during end-to-end testing on 2026-09-24. The note is supplied case note 01. The draft was reviewed during testing, not by Meera, and has not been published.",
+  "runAt": "2026-09-24T11:30:43.532531+00:00",
+  "noteSource": "Supplied case note 01 (data/seed-notes/note-01.txt)",
+  "rawNote": "Okay so batch fourteen came back from the manufacturer and the pH stability data looked off. I went back to the supplier and it turns out they quietly changed the preservative blend without notifying us — they sent a revised spec sheet three months ago but it got buried. The new preservative system is more acidic than the previous one. The finished product pH dropped by about 0.4 units which sounds small but it's enough to push us out of the optimal range for our emollient blend. The batch isn't unsafe but the texture is different in a way that I think customers will notice. We're holding it. I need to write about this because I think it illustrates something important — the assumption that a 'same formula' reorder is actually the same formula. It often isn't. Suppliers change things. If you're not checking the CoA against a baseline every batch, you won't catch it until the customer does.",
+  "score": {
+    "insight": 2,
+    "specificity": 2,
+    "relevance": 2,
+    "evidence": 2,
+    "completeness": 2,
+    "total": 10,
+    "decision": "develop",
+    "reason": "This note provides a clear, specific, and highly relevant example of the risks in supply chain management for skincare brands. It effectively illustrates the gap between theoretical formulation and manufacturing reality, which is a strong topic for your audience.",
+    "model": "gemini-3.1-flash-lite"
+  },
+  "research": {
+    "keywords": [
+      "pH stability",
+      "preservative blend",
+      "manufacturing",
+      "supply chain",
+      "certificate of analysis"
+    ],
+    "searchQuery": "skincare manufacturing ingredient changes",
+    "newsUsed": false,
+    "decision": "1 recent Google News headline was found. Gemini judged it not relevant: it discussed regulatory-driven manufacturing changes (a microplastics ban), while the note is about supplier transparency and batch verification. So the draft was written without a news angle and no source block was attached."
+  },
+  "draft": {
+    "text": "When the stability data for our fourteenth production batch arrived from our manufacturer, the pH readings were lower than our baseline by approximately 0.4 units.\n\nA difference of 0.4 units sounds minor - and the batch is not unsafe - but it is enough to alter the behaviour of our emollient blend. The texture feels slightly different, in a way that I think our customers would notice. Because of this, we are holding the entire batch.\n\nWhen we traced the discrepancy back through the documentation, we found the cause. Our raw material supplier had modified their preservative blend to a more acidic system. They had sent a revised specification sheet three months ago, but it was buried in our records.\n\nI am writing about this because it illustrates a common vulnerability in cosmetic manufacturing. There is a general assumption that reordering the same formula from the same supplier yields an identical product. It often does not.\n\nI am not suggesting the supplier acted in bad faith. They did issue the updated documentation, but because the change was not actively flagged, it went unnoticed until we ran our own tests.\n\nIf you do not compare the Certificate of Analysis - the CoA - for every incoming batch against your original baseline, these shifts remain invisible. The first person to notice the difference will likely be the customer. For us, avoiding that outcome is worth the cost of holding a batch.",
+    "model": "gemini-3.5-flash",
+    "warnings": [],
+    "unsupportedFigures": []
+  }
+}

@@ -1,7 +1,7 @@
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', 'coverage/**'] },
+  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', 'coverage/**', 'tmp/**'] },
   ...tseslint.configs.recommended,
   {
     rules: {
